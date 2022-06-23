@@ -14,6 +14,8 @@ bool Pin_lee(Pin *self)
 
 void Pin_escribe(Pin *self, bool valor)
 {
+    if(!valor)
     self -> puerto -> BRR = (1<<self -> numeroDePin);
-
+    else 
+        self ->puerto -> BSRR = (1<<self -> numeroDePin);
 }

@@ -34,8 +34,21 @@ static void pin_debePermitirPonerSalidaEnCero(void)
     miPuerto.IDR =1 << MI_PIN;
     Pin_escribe(&miPin,0);
     const uint32_t reset = miPuerto.BRR | (miPuerto.BSRR >> 16);
-    enum{RESET_ESPERADO = (1UL << MI_PIN)};
+    const uint32_t set = miPuerto.BSRR & ((1UL << 16)-1UL);
+    enum{RESET_ESPERADO = (1UL << MI_PIN), SET_ESPERADO = 0};
     TEST_ASSERT_EQUAL_HEX32(RESET_ESPERADO,reset);
+    TEST_ASSERT_EQUAL_HEX32(RESET_ESPERADO,set);
+}
+
+static void pin_debePermitirPonerSalidaEnUno(void)
+{
+    miPuerto.IDR =1 << MI_PIN;
+    Pin_escribe(&miPin,1);
+    const uint32_t reset = miPuerto.BRR | (miPuerto.BSRR >> 16);
+    const uint32_t set = miPuerto.BSRR & ((1UL << 16)-1UL);
+    enum{RESET_ESPERADO =0, SET_ESPERADO = (1UL << MI_PIN)};
+    TEST_ASSERT_EQUAL_HEX32(RESET_ESPERADO,reset);
+    TEST_ASSERT_EQUAL_HEX32(RESET_ESPERADO,set);
 }
 
 
@@ -47,6 +60,7 @@ int main(void)
     RUN_TEST (pin_debeLeerEstadoPin_0);
     RUN_TEST (pin_debeLeerEstadoPin_1);
     RUN_TEST (pin_debePermitirPonerSalidaEnCero);
+    RUN_TEST (pin_debePermitirPonerSalidaEnUno);
     UNITY_END();
     for (;;);
     
